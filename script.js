@@ -304,6 +304,11 @@ class App {
     });
   }
 
+  reset() {
+    localStorage.removeItem("workouts");
+    location.reload();
+  }
+
   //////////////end of app class ///////////////////////////////
 }
 
