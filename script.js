@@ -11,6 +11,7 @@ const inputElevation = document.querySelector(".form__input--elevation");
 class Workout {
   date = new Date();
   id = (Date.now() + "").slice(-10);
+  clicks = 0;
 
   constructor(coords, distance, duration) {
     this.coords = coords;
@@ -25,6 +26,10 @@ class Workout {
     this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${
       months[this.date.getMonth()]
     } ${this.date.getDate()}`;
+  }
+
+  click() {
+    this.clicks++;
   }
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -74,6 +79,7 @@ class App {
     // reminder: event handler's "this" is the html element so it needs to be explicitly told what "this" should be
     form.addEventListener("submit", this._newWorkout.bind(this));
     inputType.addEventListener("change", this._toggleElevationField);
+    containerWorkouts.addEventListener("click", this._moveToPopup.bind(this));
   }
 
   _getPosition() {
@@ -102,10 +108,10 @@ class App {
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.#map);
 
-    L.marker(coords)
-      .addTo(this.#map)
-      .bindPopup("A pretty CSS3 popup.<br> Easily customizable.")
-      .openPopup();
+    // L.marker(coords)
+    //   .addTo(this.#map)
+    //   .bindPopup("A pretty CSS3 popup.<br> Easily customizable.")
+    //   .openPopup();
 
     // Handling clicks on map
     this.#map.on("click", this._showForm.bind(this));
@@ -250,6 +256,24 @@ class App {
 
     form.insertAdjacentHTML("afterend", html);
   }
+
+  _moveToPopup(e) {
+    const workoutEL = e.target.closest(".workout");
+    if (!workoutEL) return;
+
+    const workout = this.#workouts.find((w) => w.id === workoutEL.dataset.id);
+    console.log(workout);
+
+    this.#map.setView(workout.coords, 13, {
+      animate: true,
+      pan: {
+        duration: 1,
+      },
+    });
+    //using the public interface
+    this.workout.click();
+  }
+
   //////////////end of app class ///////////////////////////////
 }
 
